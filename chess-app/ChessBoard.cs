@@ -62,6 +62,12 @@ namespace chess_app
 				return false;
 			}
 
+			ChessPiece capturePiece = board[to.Row, to.Col];
+			if(capturePiece != null && capturePiece.IsWhite == piece.IsWhite)
+			{
+				return false;
+			}
+
 			board[to.Row, to.Col] = piece;
 			board[from.Row, from.Col] = null;
 			return true;
