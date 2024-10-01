@@ -59,13 +59,35 @@ namespace chess_app
 
 		public override bool IsValidMove(Position from, Position to, ChessBoard board)
 		{
-			//проверка на вертикальное или горизантальное передвижение
-			if(from.Row == to.Row || from.Col == to.Col)
+			//проверка на вертикальное или горизантальное передвижение и на помеху
+			if(from.Row == to.Row)
 			{
-				return true;
+				int direction = to.Col > from.Col ? 1 : -1;
+				for(int col = from.Col + direction; col != to.Col; col += direction)
+				{
+					if(board.GetPiece(new Position(from.Row, col)) != null)
+					{
+						return false;	//есть фигура на пути
+					}
+				}
+			}
+			else if(from.Col == to.Col)
+			{
+				int direction = to.Row > from.Row ? 1 : -1;
+				for (int row = from.Row + direction; row != to.Row; row += direction)
+				{
+					if (board.GetPiece(new Position(row, from.Col)) != null)
+					{
+						return false;   //есть фигура на пути
+					}
+				}
+			}
+			else
+			{
+				return false;	//движение не по прямой линии
 			}
 
-			return false;
+			return true;	//путь свободен
 		}
 
 		public override char GetSymbol()
@@ -80,7 +102,28 @@ namespace chess_app
 
 		public override bool IsValidMove(Position from, Position to, ChessBoard board)
 		{
-			return Math.Abs(from.Row - to.Row) == Math.Abs(from.Col - to.Col);
+			//проверка на горизонтальное движение
+			if (Math.Abs(from.Row - to.Row) == Math.Abs(from.Col - to.Col))
+			{
+				return false;	//не горизонтальное
+			}
+
+			int rowDirection = to.Row > from.Row ? 1 : -1;
+			int colDirection = to.Col > from.Col ? 1 : -1;
+
+			int checkRow = from.Row + rowDirection;
+			int checkCol = from.Col + colDirection;
+
+			while(checkRow != to.Row && checkCol != to.Col)
+			{
+				if (board.GetPiece(new Position(checkRow, checkCol)) != null)
+				{
+					return false;	//путь не свободен
+				}
+				checkRow += rowDirection;
+				checkCol += colDirection;
+			}
+			return true;	//путь свободен
 		}
 
 		public override char GetSymbol()
